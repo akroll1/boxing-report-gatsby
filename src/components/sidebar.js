@@ -19,7 +19,7 @@ const Sidebar = ({ siteMetadata }) => (
       </header>
       <footer>
         <section className="contact">
-          <h3 className="contact-title">Contact me</h3>
+          <h3 className="contact-title">Contact Us</h3>
           <ul>
             {siteMetadata.social.twitter && (
               <li>
