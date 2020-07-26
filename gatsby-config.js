@@ -1,7 +1,7 @@
 module.exports = {
   siteMetadata: {
     title: `Boxing.Report`,
-    description: `All the latest power-packed boxing news, continuously updated.`,
+    description: `All the latest power-packed boxing news, updated in real-time.`,
     author: `Boxing.Report`,
     siteUrl: `https://boxing.report`,
     social: {
@@ -71,5 +71,6 @@ module.exports = {
     // `gatsby-plugin-offline`,
     `gatsby-plugin-react-helmet`,
     `gatsby-plugin-sass`,
+    `gatsby-plugin-emotion`
   ],
 }

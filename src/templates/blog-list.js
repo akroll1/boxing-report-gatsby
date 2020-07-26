@@ -1,15 +1,43 @@
 import React from 'react'
 import { Link, graphql } from 'gatsby'
-
+import axios from 'axios'
 import DefaultLayout from '../components/layout'
 import SEO from '../components/seo'
+import Hero from '../components/hero'
 
 class BlogIndex extends React.Component {
+  state = {
+    data: [],
+    currentPage: 1
+  };
+  async componentDidMount(){
+    await this.fetchBoxingArticles();
+  }
+  async fetchBoxingArticles() {
+    const url = `https://api.cognitive.microsoft.com/bing/v7.0/news/search/?q=boxing&count=100&jsonp`;
+    const headers = {
+      'Ocp-Apim-Subscription-Key':'a894e8ffde684fb7916fd1152b055e2e',
+      'data':'jsonp',
+      'Access-Control-Allow-Origin': 'localhost:8000'
+    };
+    const result = await axios.get(url, {
+      headers
+    })
+    .then(res => this.setState({data: res.data.value}))
+    // .then(res => console.log('res: ',res))
+    .catch(err => console.log('err: ',err));
+  }
+
   render() {
+    const articles = this.state.data;
+    console.log('articles: ',articles);
     const { data } = this.props
     const siteTitle = data.site.siteMetadata.title
     const posts = data.allMarkdownRemark.edges
-    const { currentPage, numPages } = this.props.pageContext
+    // const { currentPage } = this.props.pageContext
+    console.log('currentpage: ',currentPage)
+    const currentPage = this.state.currentPage;
+    const numPages = 5;
     const isFirst = currentPage === 1
     const isLast = currentPage === numPages
     const prevPage = currentPage - 1 === 1 ? '/' : (currentPage - 1).toString()
@@ -19,34 +47,36 @@ class BlogIndex extends React.Component {
       <DefaultLayout>
         <SEO
           title={siteTitle}
-          keywords={[`blog`, `gatsby`, `javascript`, `react`]}
+          keywords={[`boxing`,`boxing land`,`boxing report`, `boxing latest news`, `boxing news`]}
         />
-        {posts.map(({ node }) => {
+        <Hero />
+        {articles.map((article,i) => {
           return (
-            <article className="post" key={node.fields.slug}>
-              {node.frontmatter.img &&
-                node.frontmatter.img.childImageSharp &&
-                node.frontmatter.img.childImageSharp.fluid && (
-                  <Link
-                    to={node.fields.slug}
-                    className="post-thumbnail"
-                    style={{
-                      backgroundImage: `url(${node.frontmatter.img.childImageSharp.fluid.src})`,
-                    }}
-                  />
-                )}
-              <div className="post-content">
-                <h2 className="post-title">
-                  <Link to={node.fields.slug}>{node.frontmatter.title}</Link>
-                </h2>
-                <p>{node.excerpt}</p>
-                <span className="post-date">
-                  {node.frontmatter.date}&nbsp;&nbsp;—&nbsp;
-                </span>
-                <span className="post-words">
-                  {node.timeToRead} minute read
-                </span>
-              </div>
+            <article className="post" key={i}>
+              <a target="_blank"
+                href={article.url}
+                className="post-thumbnail"
+                style={{
+                  backgroundImage: `url(${article.image.thumbnail.contentUrl})`,
+                  width: '20%'
+                }}
+              />
+                <div className="post-content">
+                {/* <a target="_blank" */}
+                {/* href={article.url}> */}
+                  <h2 style={{fontSize: '24px', fontWeight:'600'}} className="post-title">
+                    {article.name}
+                  </h2>
+                  <p>{article.description}</p>
+                  <span>
+                    {article.provider[0].name}
+                  </span>
+                  <br/>
+                  <span className="post-date">
+                    {new Date(article.datePublished).toString().slice(0,15)}&nbsp;&nbsp;
+                  </span>
+                {/* </a> */}
+                </div>
             </article>
           )
         })}
